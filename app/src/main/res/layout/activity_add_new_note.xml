@@ -44,30 +44,33 @@
         app:layout_constraintTop_toBottomOf="@+id/titleTextView">
 
         <RadioButton
-            android:id="@+id/radioButton3"
+            android:id="@+id/radioButtonBlue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
             android:layout_weight="1"
             android:button="@drawable/radio_button_blue"
-            android:checked="true" />
+            android:onClick="onColorRadioGroupClicked" />
 
         <RadioButton
-            android:id="@+id/radioButton"
+            android:id="@+id/radioButtonYellow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
+            android:onClick="onColorRadioGroupClicked"
             android:layout_weight="1"
             android:button="@drawable/radio_button_yellow"
             android:checked="false" />
 
         <RadioButton
-            android:id="@+id/radioButton2"
+            android:id="@+id/radioButtonRed"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
+            android:onClick="onColorRadioGroupClicked"
             android:layout_weight="1"
-            android:button="@drawable/radio_button_red" />
+            android:button="@drawable/radio_button_red"
+            android:checked="false" />
 
     </RadioGroup>
 
@@ -85,31 +88,34 @@
         app:layout_constraintTop_toBottomOf="@+id/titleTextView">
 
         <RadioButton
-            android:id="@+id/radioButton6"
+            android:id="@+id/radioButtonNote"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
             android:layout_weight="1"
             android:button="@drawable/radio_button_note"
-            android:checked="true" />
+            android:checked="false"
+            android:onClick="onTypeRadioGroupClicked" />
 
         <RadioButton
-            android:id="@+id/radioButton5"
+            android:id="@+id/radioButtonCheckBox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
+            android:onClick="onTypeRadioGroupClicked"
             android:layout_weight="1"
             android:button="@drawable/radio_button_check_box"
             android:checked="false" />
 
         <RadioButton
-            android:id="@+id/radioButton4"
+            android:id="@+id/radioButtonPhoto"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
             android:layout_weight="1"
             android:button="@drawable/radio_button_photo"
-            android:checked="false" />
+            android:checked="true"
+            android:onClick="onTypeRadioGroupClicked" />
 
     </RadioGroup>
 
@@ -123,6 +129,7 @@
         android:backgroundTint="@color/blue"
         android:padding="8dp"
         android:visibility="visible"
+        app:cardBackgroundColor="#FFFFFF"
         app:layout_constraintBottom_toTopOf="@+id/guideline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -201,7 +208,7 @@
         android:layout_height="0dp"
         android:layout_below="@+id/titleTextView"
         android:layout_marginBottom="8dp"
-        android:backgroundTint="@color/yellow"
+        android:backgroundTint="@color/blue"
         android:padding="8dp"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/guideline"
