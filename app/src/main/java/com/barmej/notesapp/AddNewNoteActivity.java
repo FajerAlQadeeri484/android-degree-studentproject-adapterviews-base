@@ -147,6 +147,8 @@ public class AddNewNoteActivity extends AppCompatActivity {
                 Intent intent = new Intent();
                 intent.putExtra(Constants.EXTRA_NOTE, noteAdded_Check);
                 intent.putExtra(Constants.EXTRA_COLOR, color);
+                //intent.putExtra(Constants.EXTRA_BOO, checkNoteCheckBox.isChecked());
+                intent.putExtra(Constants.EXTRA_BOO, noteAdded_Check);
                 setResult(RESULT_OK, intent);
                 finish();
             } else {

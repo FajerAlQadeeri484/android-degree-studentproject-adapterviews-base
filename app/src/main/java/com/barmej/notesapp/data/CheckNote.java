@@ -1,16 +1,23 @@
 package com.barmej.notesapp.data;
 
-public class CheckNote extends Note {
+import java.io.Serializable;
 
-    private boolean checkBox;
+public class CheckNote extends Note implements Serializable {
+
+    private boolean checked;
 
 
-    public CheckNote(String note, int color, boolean checkBox) {
+    public CheckNote(String note, int color, boolean checked) {
         super(note, color);
-        this.checkBox = checkBox;
+        this.checked = checked;
     }
 
-    public boolean isCheckBox() {
-        return checkBox;
+    public boolean isChecked() {
+        return checked;
     }
+
+    public void setChecked(boolean checked) {
+        this.checked = checked;
+    }
+
 }

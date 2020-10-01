@@ -1,9 +1,11 @@
 package com.barmej.notesapp.data;
 
-public class Note {
+import java.io.Serializable;
 
-    private String note;
-    private int color;
+public class Note implements Serializable {
+
+    protected String note;
+    protected int color;
 
     public Note(String note, int color) {
         this.note = note;
@@ -16,5 +18,16 @@ public class Note {
 
     public int getColor() {
         return color;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
+    }
+
+    public Note() {
     }
 }

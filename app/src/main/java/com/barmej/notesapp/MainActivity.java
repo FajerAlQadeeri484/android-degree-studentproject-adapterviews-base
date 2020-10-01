@@ -3,15 +3,17 @@ package com.barmej.notesapp;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.SyncStateContract;
+import android.os.Parcelable;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.barmej.notesapp.adapter.PhotoNoteAdapter;
@@ -21,6 +23,7 @@ import com.barmej.notesapp.data.PhotoNote;
 import com.barmej.notesapp.listener.ItemClickListener;
 import com.barmej.notesapp.listener.ItemLongClickListener;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -29,9 +32,12 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<Note> mItems;
     private PhotoNoteAdapter mAdapter;
 
-    RecyclerView.LayoutManager mGridLayoutManager;
+    RecyclerView.LayoutManager mStaggeredGridLayoutManager;
 
     private static final int ADD_NOTE = 145;
+    private static final int EDIT_NOTE = 147;
+    private static final int EDIT_PHOTO = 148;
+    Uri pic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,8 +45,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mRecyclerView = findViewById(R.id.recycler_view_photos);
-        mGridLayoutManager = new GridLayoutManager(this,2);
-        mRecyclerView.setLayoutManager(mGridLayoutManager);
+        mStaggeredGridLayoutManager = new StaggeredGridLayoutManager(2,1);
+        mRecyclerView.setLayoutManager(mStaggeredGridLayoutManager);
         mItems = new ArrayList<Note>();
         mAdapter = new PhotoNoteAdapter(mItems,
                 new ItemClickListener() {
@@ -76,12 +82,17 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == ADD_NOTE){
             if (data != null){
                 Uri photoUri = data.getParcelableExtra(Constants.EXTRA_PHOTO_URI);
+                //boolean boo = data.getBooleanExtra(Constants.EXTRA_BOO,false);
+                String testing = data.getStringExtra(Constants.EXTRA_BOO);
                 String nnote = data.getStringExtra(Constants.EXTRA_NOTE);
                 int color = data.getIntExtra(Constants.EXTRA_COLOR,1);
                 System.out.println("ppp"+nnote);
                 if (photoUri!=null){
                     PhotoNote photoNote = new PhotoNote(nnote,color,photoUri);
                     addItem(photoNote);
+                }else if (testing!=null){
+                    CheckNote checkNote = new CheckNote(nnote,color,false);
+                    addItem(checkNote);
                 }else{
                     Note note = new Note(nnote,color);
                     addItem(note);
@@ -89,6 +100,30 @@ public class MainActivity extends AppCompatActivity {
 
             }else{
                 Toast.makeText(this,R.string.didnt_add_note, Toast.LENGTH_LONG).show();
+            }
+        }
+        else if (requestCode == EDIT_NOTE){
+            if (resultCode == RESULT_OK){
+                String textUpdated = data.getExtras().getString("TEXT_UPDATED");
+                int itemPosition = data.getExtras().getInt("P");
+                Note note = mItems.get(itemPosition);
+                note.setNote(textUpdated);
+                mAdapter.notifyItemChanged(itemPosition);
+            }
+        }
+        else if (requestCode == EDIT_PHOTO){
+            if (resultCode == RESULT_OK){
+                Uri photoUpdated;
+                String textUpdated = data.getExtras().getString("TEXT_UPDATED");
+                int itemPosition = data.getExtras().getInt("P");
+                photoUpdated = data.getExtras().getParcelable("PHOTO_UPDATED");
+                if (photoUpdated==null){
+                    photoUpdated = pic;
+                }
+                Note note = mItems.get(itemPosition);
+                note.setNote(textUpdated);
+                ((PhotoNote) note).setImage(photoUpdated);
+                mAdapter.notifyItemChanged(itemPosition);
             }
         }
     }
@@ -101,22 +136,23 @@ public class MainActivity extends AppCompatActivity {
     private void edit(int position){
         Note note = mItems.get(position);
         if (note instanceof PhotoNote){
+            pic = ((PhotoNote) note).getImage();
             Intent intentToNotePhotoDetails = new Intent(MainActivity.this,NotePhotoDetails.class);
-            intentToNotePhotoDetails.putExtra("PHOTO",((PhotoNote) note).getImage());
-            intentToNotePhotoDetails.putExtra("TEXT",note.getNote());
-            intentToNotePhotoDetails.putExtra("COLOR",note.getColor());
-            startActivity(intentToNotePhotoDetails);
+            intentToNotePhotoDetails.putExtra("NOTE", note);
+            intentToNotePhotoDetails.putExtra("POSITION", position);
+            startActivityForResult(intentToNotePhotoDetails, EDIT_PHOTO);
 
         }else if (note instanceof CheckNote){
             Intent intentToNoteCheckDetails = new Intent(MainActivity.this,NoteCheckDetails.class);
-            intentToNoteCheckDetails.putExtra("TEXT",note.getNote());
-            intentToNoteCheckDetails.putExtra("COLOR",note.getColor());
-            startActivity(intentToNoteCheckDetails);
+            intentToNoteCheckDetails.putExtra("NOTE", note);
+            intentToNoteCheckDetails.putExtra("POSITION", position);
+            startActivityForResult(intentToNoteCheckDetails, EDIT_NOTE);
+
         }else {
             Intent intentToNoteDetails = new Intent(MainActivity.this,NoteDetails.class);
-            intentToNoteDetails.putExtra("TEXT",note.getNote());
-            intentToNoteDetails.putExtra("COLOR",note.getColor());
-            startActivity(intentToNoteDetails);
+            intentToNoteDetails.putExtra("NOTE", note);
+            intentToNoteDetails.putExtra("POSITION", position);
+            startActivityForResult(intentToNoteDetails, EDIT_NOTE);
         }
 
     }

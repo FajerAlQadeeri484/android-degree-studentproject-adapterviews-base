@@ -9,7 +9,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.barmej.notesapp.R;
@@ -45,39 +44,54 @@ public class PhotoNoteAdapter extends RecyclerView.Adapter<PhotoNoteAdapter.Note
     public NoteViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
         NoteViewHolder viewHolder;
-        if (viewType == PHOTO_TYPE){
-             view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_note_photo,parent,false);
-             viewHolder = new PhotoNoteViewHolder(view, mItemClickListener, mItemLongClickListener);
-        }else if (viewType == CHECK_TYPE){
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_note_check,parent,false);
+        if (viewType == PHOTO_TYPE) {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_note_photo, parent, false);
+            viewHolder = new PhotoNoteViewHolder(view, mItemClickListener, mItemLongClickListener);
+        } else if (viewType == CHECK_TYPE) {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_note_check, parent, false);
             viewHolder = new NoteCheckViewHolder(view, mItemClickListener, mItemLongClickListener);
-        }else {
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_note,parent,false);
+        } else {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_note, parent, false);
             viewHolder = new NoteViewHolder(view, mItemClickListener, mItemLongClickListener);
         }
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull NoteViewHolder holder, int position) {
-        Note note = mItems.get(position);
-        if (note instanceof PhotoNote){
-            PhotoNote photoNote = (PhotoNote)note;
-            PhotoNoteViewHolder photoNoteViewHolder = (PhotoNoteViewHolder)holder;
+    public void onBindViewHolder(@NonNull final NoteViewHolder holder, final int position) {
+        final Note note = mItems.get(position);
+        if (note instanceof PhotoNote) {
+            PhotoNote photoNote = (PhotoNote) note;
+            PhotoNoteViewHolder photoNoteViewHolder = (PhotoNoteViewHolder) holder;
             photoNoteViewHolder.photoIv.setImageURI(photoNote.getImage());
-        }else if (note instanceof CheckNote){
-            //CheckNote checkNote = (CheckNote)note;
-            NoteCheckViewHolder noteCheckViewHolder = (NoteCheckViewHolder)holder;
-            //noteCheckViewHolder.checkBox.setChecked(false);
+            holder.cardView.setBackgroundColor(note.getColor());
+        } else if (note instanceof CheckNote) {
+            final CheckNote checkNote = (CheckNote) note;
+            final NoteCheckViewHolder noteCheckViewHolder = (NoteCheckViewHolder) holder;
+
+            noteCheckViewHolder.checkBox.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    final boolean isChecked = noteCheckViewHolder.checkBox.isChecked();
+                    int colorChosen = note.getColor();
+                    checkNote.setChecked(isChecked);
+                    if (isChecked) {
+                        holder.cardView.setBackgroundColor(Color.parseColor("#ADFF2F"));
+                    } else {
+                        holder.cardView.setBackgroundColor(colorChosen);
+                    }
+                }
+            });
             int colorChosen = note.getColor();
-            if (noteCheckViewHolder.checkBox.isChecked()){
+            noteCheckViewHolder.checkBox.setChecked(checkNote.isChecked());
+            if (checkNote.isChecked()) {
                 holder.cardView.setBackgroundColor(Color.parseColor("#ADFF2F"));
-            }else {
+            } else {
                 holder.cardView.setBackgroundColor(colorChosen);
             }
-            notifyItemChanged(position);
+        }else {
+            holder.cardView.setBackgroundColor(note.getColor());
         }
-        holder.cardView.setBackgroundColor(note.getColor());
         holder.theNote.setText(note.getNote());
         holder.position = position;
     }
@@ -88,18 +102,19 @@ public class PhotoNoteAdapter extends RecyclerView.Adapter<PhotoNoteAdapter.Note
         return mItems.size();
     }
 
+
     @Override
     public int getItemViewType(int position) {
-        if (mItems.get(position) instanceof PhotoNote ){
+        if (mItems.get(position) instanceof PhotoNote) {
             return PHOTO_TYPE;
-        }else if (mItems.get(position) instanceof CheckNote){
+        } else if (mItems.get(position) instanceof CheckNote) {
             return CHECK_TYPE;
-        }else {
+        } else {
             return NOTE_TYPE;
         }
     }
 
-    static class NoteViewHolder extends RecyclerView.ViewHolder{
+    static class NoteViewHolder extends RecyclerView.ViewHolder {
 
         private TextView theNote;
         private View cardView;
@@ -140,12 +155,10 @@ public class PhotoNoteAdapter extends RecyclerView.Adapter<PhotoNoteAdapter.Note
     static class NoteCheckViewHolder extends NoteViewHolder {
 
         private CheckBox checkBox;
-        private View cardView1;
 
         public NoteCheckViewHolder(@NonNull View itemView, ItemClickListener mItemClickListener, ItemLongClickListener mItemLongClickListener) {
             super(itemView, mItemClickListener, mItemLongClickListener);
             checkBox = itemView.findViewById(R.id.checkbox);
-            cardView1 = itemView.findViewById(R.id.cardView1);
         }
     }
 
